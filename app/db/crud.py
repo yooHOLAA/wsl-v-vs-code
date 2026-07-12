@@ -72,3 +72,18 @@ def delete_book(db: Session, book_id: int):
         db.commit()
         return True
     return False
+
+# Получить категорию по ID (нужно для API)
+def get_category_by_id(db: Session, category_id: int):
+    return db.query(Category).filter(Category.id == category_id).first()
+
+# Получить все книги (с опциональной фильтрацией по категории)
+def get_books(db: Session, category_id: int = None):
+    query = db.query(Book)
+    if category_id is not None:
+        query = query.filter(Book.category_id == category_id)
+    return query.all()
+
+# Получить книгу по ID (нужно для API)
+def get_book_by_id(db: Session, book_id: int):
+    return db.query(Book).filter(Book.id == book_id).first()

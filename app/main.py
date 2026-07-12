@@ -1,26 +1,23 @@
-# WSL
-#print("Hello, world!")
+from fastapi import FastAPI
+from .api import books, categories
 
-# PostgreSQL
-from db.db import SessionLocal
-from db.crud import get_categories, get_books
+# Создаем объект FastAPI
+app = FastAPI(
+    title="Bookstore API",
+    description="API для управления книгами и категориями",
+    version="1.0.0"
+)
 
-# Получаем сессию для работы с базой
-db = SessionLocal()
+# Подключаем роутеры (эндпоинты)
+app.include_router(categories.router)
+app.include_router(books.router)
 
-try:
-    print("=== СПИСОК КАТЕГОРИЙ ===")
-    # Получаем все категории и выводим их
-    categories = get_categories(db)
-    for cat in categories:
-        print(f"ID: {cat.id} | Название: {cat.title}")
+# Эндпоинт для проверки, что сервис жив
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "message": "API работает!"}
 
-    print("\n=== СПИСОК КНИГ ===")
-    # Получаем все книги и выводим их
-    books = get_books(db)
-    for book in books:
-        print(f"ID: {book.id} | Название: {book.title} | Цена: {book.price} руб. | Категория ID: {book.category_id}")
-        
-finally:
-    # Закрываем сессию в конце
-    db.close()
+# Корневой эндпоинт
+@app.get("/")
+def root():
+    return {"message": "Добро пожаловать в Bookstore API! Перейди в /docs для документации."}

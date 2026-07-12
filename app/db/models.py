@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
-from db.db import Base
+from .db import Base
 from sqlalchemy.orm import relationship
 
 # Таблица категорий книг
