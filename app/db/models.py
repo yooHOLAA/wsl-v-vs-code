@@ -1,18 +1,16 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from .db import Base
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
 
-# Таблица категорий книг
 class Category(Base):
     __tablename__ = 'categories'
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, unique=True, index=True)
     
-    # У одной категории может быть много книг
-    books = relationship('Book', back_populates='category')
+    # ДОБАВЛЕНО: cascade="all, delete"
+    books = relationship('Book', back_populates='category', cascade="all, delete")
 
-# Таблица книг
 class Book(Base):
     __tablename__ = 'books'
 
@@ -22,8 +20,6 @@ class Book(Base):
     price = Column(Float)
     url = Column(String, nullable=True)
     
-    # Связывает книгу с категорией
     category_id = Column(Integer, ForeignKey('categories.id'))
     
-    # Книга принадлежит одной категории
     category = relationship('Category', back_populates='books')

@@ -87,3 +87,11 @@ def get_books(db: Session, category_id: int = None):
 # Получить книгу по ID (нужно для API)
 def get_book_by_id(db: Session, book_id: int):
     return db.query(Book).filter(Book.id == book_id).first()
+
+# Проверка существования категории по названию
+def get_category_by_title(db: Session, title: str):
+    return db.query(Category).filter(Category.title == title).first()
+
+# Проверка существования книги по названию в конкретной категории
+def get_book_by_title(db: Session, title: str, category_id: int):
+    return db.query(Book).filter(Book.title == title, Book.category_id == category_id).first()

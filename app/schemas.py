@@ -1,27 +1,21 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 # ==========================================
 # Схемы для категорий (Category)
 # ==========================================
 
-# Базовая схема: какие поля нужны при создании/обновлении категории
 class CategoryBase(BaseModel):
-    title: str
+    title: str = Field(..., min_length=1, max_length=100, description="Название категории")
 
-# Схема для создания категории (наследуем от базовой)
 class CategoryCreate(CategoryBase):
     pass
 
-# Схема для обновления категории (title опционален, можно менять не всё)
 class CategoryUpdate(BaseModel):
-    title: Optional[str] = None
+    title: Optional[str] = Field(None, min_length=1, max_length=100)
 
-# Схема ответа: что возвращаем клиенту (добавляем id)
 class CategoryResponse(CategoryBase):
     id: int
-
-    # Говорим Pydantic, что можно работать с объектами SQLAlchemy
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -29,28 +23,23 @@ class CategoryResponse(CategoryBase):
 # Схемы для книг (Book)
 # ==========================================
 
-# Базовая схема: какие поля нужны при создании/обновлении книги
 class BookBase(BaseModel):
-    title: str
-    description: str
-    price: float
-    url: Optional[str] = None
-    category_id: int
+    title: str = Field(..., min_length=1, max_length=255, description="Название книги")
+    description: str = Field(..., min_length=1, description="Описание книги")
+    price: float = Field(..., gt=0, description="Цена книги должна быть больше 0")
+    url: Optional[str] = Field(None, description="Ссылка на книгу")
+    category_id: int = Field(..., description="ID категории")
 
-# Схема для создания книги
 class BookCreate(BookBase):
     pass
 
-# Схема для обновления книги (все поля опциональны)
 class BookUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    price: Optional[float] = None
+    title: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = Field(None, min_length=1)
+    price: Optional[float] = Field(None, gt=0)
     url: Optional[str] = None
     category_id: Optional[int] = None
 
-# Схема ответа: что возвращаем клиенту (добавляем id)
 class BookResponse(BookBase):
     id: int
-
     model_config = ConfigDict(from_attributes=True)
